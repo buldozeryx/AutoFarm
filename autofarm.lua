@@ -1,3 +1,54 @@
+local function updateCameraSettings()
+    if State.Camera.NoclipEnabled then
+        LocalPlayer.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
+    else
+        LocalPlayer.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Zoom
+    end
+end
+
+local function findTargetPlayer(playerName)
+    for _, player in pairs(Players:GetPlayers()) do
+        if string.lower(player.Name) == string.lower(playerName) or 
+           string.lower(player.DisplayName) == string.lower(playerName) then
+            return player
+        end
+    end
+    return nil
+end
+
+local function getHumanoidRootPart(character)
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        return character.HumanoidRootPart
+    end
+    return nil
+end
+
+local function toggleFists()
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    local backpack = LocalPlayer:FindFirstChild("Backpack")
+    if not backpack then return end
+    
+    for _, tool in pairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+            tool.Parent = backpack
+            task.wait(0.2)
+            tool.Parent = character
+            break
+        end
+    end
+end
+
+local function enableNoClip(character)
+    if not character then return end
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = false
+        end
+    end
+end
+
 local function startESpam()
     if State.AutoFarm.ESpamConnection then
         State.AutoFarm.ESpamConnection:Disconnect()
@@ -138,4 +189,16 @@ local function teleportToUnderground()
     
     rootPart.CFrame = CFrame.new(UNDERGROUND_COORDINATES)
     Library:Notify("Teleported to Underground", 2)
+end
+
+local function teleportToSaveVibecheck()
+    if Library.Unloaded then return end
+    local character = LocalPlayer.Character
+    if not character then return end
+    
+    local rootPart = getHumanoidRootPart(character)
+    if not rootPart then return end
+    
+    rootPart.CFrame = CFrame.new(SAVEVIBECHECK_COORDINATES)
+    Library:Notify("Teleported to Save Vibecheck", 2)
 end
